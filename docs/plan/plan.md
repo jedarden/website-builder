@@ -45,12 +45,20 @@ major = base image major change.
 ## Implementation Phases
 
 - [x] Phase 1: Repo scaffold + Dockerfile (this repo)
-- [ ] Phase 2: `website-builder-release` WorkflowTemplate in declarative-config;
-      first release `v1.0.0` pushed to ghcr; digest recorded in the GitHub
-      Release notes
-- [ ] Phase 3: `website-build` template adopts the digest (drop `apt-get`,
-      switch deploy to baked `wrangler`); verify a jedarden.com build lands
-      ~65–70s
+- [x] Phase 2: `website-builder-release` WorkflowTemplate live; v1.0.0 built
+      and pushed (digest `sha256:049129f9…227de` in the GitHub Release notes).
+      Two field lessons: Kaniko context must use the **GitHub mirror** (the
+      Forgejo instance 401s all anonymous reads), and the release step's tag
+      poll must be loud + per-call bounded (a silent `gh api` hang once ate
+      the pod deadline with zero output).
+- [x] Phase 3: `website-build` adopted the digest — freshness gate first,
+      `apt-get` dropped, baked wrangler, `imagePullSecrets` added.
+- [x] Phase 3b: `website-builder-autobump` CronWorkflow live (Mondays 06:00
+      UTC; Argo 4.x needs `spec.schedules` plural). Bump step BLOCKED on the
+      one human step: mint a Forgejo write token →
+      `kubectl -n argo-workflows create secret generic forgejo-ci-token
+      --from-literal=token=…`. Until then it detects and halts with
+      instructions; the freshness gate remains the dead-man's switch.
 - [ ] Phase 4 (separate effort): lockfile-keyed `node_modules` +
       `node_modules/.astro` cache PVC in the template — targets the remaining
       `npm ci` (~23s) and part of the Astro image work (~10–15s)
