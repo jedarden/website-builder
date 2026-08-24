@@ -18,7 +18,7 @@ RUN apt-get update -qq \
 
 # wrangler: pinned exactly. The deploy step calls `wrangler` from PATH —
 # bumping this pin is a release of this image, not a per-build download.
-RUN npm install -g wrangler@4.119.0 \
+RUN npm install -g wrangler@4.125.0 \
   && wrangler --version
 
 # CI hygiene: no telemetry, no update-notifier chatter in build logs.
