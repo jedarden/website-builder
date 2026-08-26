@@ -10,10 +10,16 @@
 # image drops. Revisit -slim only with every consumer's build verified.
 FROM node:22@sha256:0557ac14e0d45d02ed563067b82856ca5e7aa3437fa28d98d4350ea9c3d9494a
 
-# git: the template's clone step. ca-certificates comes with the base but
-# refresh alongside. Clean apt lists to keep the layer lean.
+# git: the template's clone step. curl and zstd are explicit even though the
+# base carries them today: curl signs the ARMOR S3 cache requests
+# (--aws-sigv4, present since curl 7.75) and zstd backs `tar --zstd` — GNU
+# tar shells out to the zstd binary, which the base does NOT include (probed
+# 2026-08-26: tar 1.34 + no zstd = "zstd: not found"). Making them apt-pins
+# keeps the template's script dependencies owned by this image, not by
+# whatever buildpack-deps happens to ship. Clean apt lists to keep the layer
+# lean.
 RUN apt-get update -qq \
-  && apt-get install -y -qq --no-install-recommends git \
+  && apt-get install -y -qq --no-install-recommends git curl zstd \
   && rm -rf /var/lib/apt/lists/*
 
 # wrangler: pinned exactly. The deploy step calls `wrangler` from PATH —
