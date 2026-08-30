@@ -1,5 +1,9 @@
 # website-builder
 
+> **Internal tooling, public for reference.** This image is built for the
+> author's Argo Workflows deployment and is not a general-purpose static-site
+> builder distribution.
+
 CI builder image for static-site builds on Argo Workflows — `node:22` with git
 and a pinned wrangler baked in, published to `ghcr.io/jedarden/website-builder`
 and consumed digest-pinned by the `website-build` WorkflowTemplate.
