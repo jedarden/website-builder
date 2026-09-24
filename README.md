@@ -55,9 +55,15 @@ the WorkflowTemplate's env, exactly as before.
 
 ## Maintenance cadence
 
-Rebuild (patch bump) when: the wrangler pin needs a bump, or the `node:22` base
-digest moves for a security fix. Both are one-line Dockerfile changes. There is
-no scheduled rebuild — this image changes when its pins change, not on a timer.
+The `website-builder-autobump` CronWorkflow in `declarative-config` checks
+upstream pins every Monday at 06:00 UTC. When Wrangler has moved by at least
+five minor versions or the `node:22` base digest has changed, it updates the
+Dockerfile, creates the next patch tag, builds and smoke-tests the image, writes
+the verified digest to the `website-build` WorkflowTemplate, and creates a
+GitHub Release. Runs without pin drift do not rebuild the image.
+
+The digest writeback uses Forgejo's file API with a file-SHA check, so it only
+updates the builder pin in `declarative-config` and retries concurrent edits.
 
 ## Structure
 
