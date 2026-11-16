@@ -8,7 +8,7 @@
 # node:22 (full, not -slim) deliberately: this image serves the *generic*
 # website-build template, and downstream sites may need the toolchain the slim
 # image drops. Revisit -slim only with every consumer's build verified.
-FROM node:22@sha256:7702d8aa4d5910871692af4480eb3ba86f23047a6417a44d857d06c95d060d3f
+FROM node:22@sha256:e13726ca604184d7a91fcacab1fc09eefd642dc28e79ac34e85540dd93b78cfb
 
 # git: the template's clone step. curl and zstd are explicit even though the
 # base carries them today: curl signs the ARMOR S3 cache requests
@@ -24,7 +24,7 @@ RUN apt-get update -qq \
 
 # wrangler: pinned exactly. The deploy step calls `wrangler` from PATH —
 # bumping this pin is a release of this image, not a per-build download.
-RUN npm install -g wrangler@4.158.0 \
+RUN npm install -g wrangler@4.162.0 \
   && wrangler --version
 
 # CI hygiene: no telemetry, no update-notifier chatter in build logs.
